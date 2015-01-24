@@ -10,7 +10,7 @@ coreos:
 
     # uncomment the following line and replace it with your discovery URL
 
-    discovery: https://discovery.etcd.io/7622359443899352aec7597b2fc0003f
+    discovery: https://discovery.etcd.io/d2251dd58c13e14d4b3dbf8eed40959f
 
     addr: $private_ipv4:4001
 
