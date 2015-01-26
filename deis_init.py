@@ -62,7 +62,7 @@ call(["deisctl", "start", "platform"])
 call(["deis", "register", "http://deis." + pub_ip + ".xip.io"])
 call(["deis", "keys:add"])
 
-os.chdir("../btsync_local_test2/")
+os.chdir("../drupal_allin2/")
 call(["deis", "create"])
 call(["deis", "tags:set", "environ=prod,master=true"])
 call(["git", "push", "deis", "master"])
