@@ -23,10 +23,6 @@ shutil.copyfile('./cloud-config.tmpl', './cloud-config')
 cluster_id = urllib2.urlopen("https://discovery.etcd.io/new").read()
 for line in fileinput.input("cloud-config", inplace=True):
 	print(line.replace("https://discovery.etcd.io/b827b6e8fa78993a03e04944d834db45", cluster_id))
-# Push cloud-config with new cluster id
-call(["git", "add", "cloud-config"])
-call(["git", "commit", "-m", "'cloud-config updated.'"])
-call(["git", "push"])
 
 
 # Create new droplets
@@ -45,7 +41,6 @@ while x <= CLUSTER_SIZE:
 	# Clean ssh key fingerprint
 	call(["ssh-keygen", "-R", pub_ip])
 	# Configure droplet for DEIS cluster
-	# call(["/usr/bin/ssh", "-o StrictHostKeyChecking=no", "-o PasswordAuthentication=no", "core@" + pub_ip, "sudo /usr/bin/coreos-cloudinit --from-url=https://raw.githubusercontent.com/freeminder/deis_cluster_automation/master/cloud-config"])
 	call(["/usr/bin/scp", "-o StrictHostKeyChecking=no", "-o PasswordAuthentication=no", "cloud-config", "core@" + pub_ip + ":~/"])
 	call(["/usr/bin/ssh", "-o StrictHostKeyChecking=no", "-o PasswordAuthentication=no", "core@" + pub_ip, "sudo /usr/bin/coreos-cloudinit --from-file=cloud-config"])
 	x += 1
