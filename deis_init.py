@@ -35,14 +35,14 @@ new_droplet_id = result['droplet']['id']
 new_droplet = client.Droplet(new_droplet_id)
 
 
-# Configure DEIS cluster
+# Configure droplet for DEIS cluster
 new_droplet = client.Droplet(new_droplet_id)
 pub_ip = new_droplet.ip_addresses()[1]
 call(["/usr/bin/ssh", "core@" + pub_ip, "sudo /usr/bin/coreos-cloudinit --from-url=https://raw.githubusercontent.com/freeminder/deis_cluster_automation/master/cloud-config"])
 # Tag machine
 call(["/usr/bin/scp", "fleet.conf", "core@" + pub_ip + ":~/"])
 call(["/usr/bin/ssh", "core@" + pub_ip, "sudo mkdir -p /etc/fleet && sudo mv fleet.conf /etc/fleet/ && sudo systemctl restart fleet"])
-# Script installation
+# DEIS installation
 call(["ssh-agent", "-s"])
 call(["ssh-add", "/home/dim/.ssh/id_rsa"])
 
@@ -60,28 +60,3 @@ os.chdir("../btsync_local_test2/")
 call(["deis", "create"])
 call(["deis", "tags:set", "environ=prod,foo=bar"])
 call(["git", "push", "deis", "master"])
-
-
-
-
-
-
-
-
-
-
-
-
-# SSH Keys
-# pub_key = open('~/.ssh/id_rsa.pub').read()
-# client.keys.create(name='RSA key', public_key=pub_key)
-# client.keys.list()
-
-# Images
-# client.images.list()
-
-## shortcuts
-# new_droplet.status()
-# client.droplets.list()
-# print(new_droplet.info())
-# client.droplets.delete(new_droplet_id)
