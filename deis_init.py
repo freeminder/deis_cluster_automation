@@ -29,7 +29,7 @@ call(["git", "push"])
 
 # Create new droplet
 vm_gen_num = randint(11,99)
-status, result = client.droplets.create(name='Dmitry.CoreOS.test' + vm_gen_num, region='nyc3',\
+status, result = client.droplets.create(name='Dmitry.CoreOS.test' + str(vm_gen_num), region='nyc3',\
     size='4gb', image='coreos-stable', private_networking='true', ssh_keys=['534374'])
 new_droplet_id = result['droplet']['id']
 new_droplet = client.Droplet(new_droplet_id)
