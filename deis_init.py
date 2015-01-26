@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import dosa
 from subprocess import call
-from random import randint
+import random
+import string
 import urllib2
 import fileinput
 import shutil
@@ -11,7 +12,7 @@ import sys
 API_KEY = 'ad64ddd15bf37aa7157b30b3eada5d0d254936ae11d30e6c8ae386c9d2803d1c'
 dosa.set_debug()  # enables debug logs
 client = dosa.Client(api_key=API_KEY)
-
+VM_NUM = 3
 
 # Remove the old config file if exists and copy new one
 if os.path.isfile('./cloud-config'): os.remove('./cloud-config')
@@ -27,16 +28,19 @@ call(["git", "commit", "-m", "'cloud-config updated.'"])
 call(["git", "push"])
 
 
-# Create new droplet
-vm_gen_num = randint(11,99)
-status, result = client.droplets.create(name='Dmitry.CoreOS.test' + str(vm_gen_num), region='nyc3',\
-    size='4gb', image='coreos-stable', private_networking='true', ssh_keys=['534374'])
-new_droplet_id = result['droplet']['id']
-new_droplet = client.Droplet(new_droplet_id)
+# Create new droplet function
+x = 1
+while x <= VM_NUM:
+	vm_gen_num = randint(11,99)
+	vm_gen_let = random.choice(string.ascii_letters)
+	status, result = client.droplets.create(name='Dmitry.CoreOS.test' + str(vm_gen_num) + str(vm_gen_let), region='nyc3',\
+		size='4gb', image='coreos-stable', private_networking='true', ssh_keys=['534374'])
+	new_droplet_id = result['droplet']['id']
+	new_droplet = client.Droplet(new_droplet_id)
+	x += 1
 
 
 # Configure droplet for DEIS cluster
-new_droplet = client.Droplet(new_droplet_id)
 pub_ip = new_droplet.ip_addresses()[1]
 call(["/usr/bin/ssh", "core@" + pub_ip, "sudo /usr/bin/coreos-cloudinit --from-url=https://raw.githubusercontent.com/freeminder/deis_cluster_automation/master/cloud-config"])
 # Tag machine
@@ -44,10 +48,10 @@ call(["/usr/bin/scp", "fleet.conf", "core@" + pub_ip + ":~/"])
 call(["/usr/bin/ssh", "core@" + pub_ip, "sudo mkdir -p /etc/fleet && sudo mv fleet.conf /etc/fleet/ && sudo systemctl restart fleet"])
 # DEIS installation
 call(["ssh-agent", "-s"])
-call(["ssh-add", "/home/dim/.ssh/id_rsa"])
+call(["ssh-add", "~/.ssh/id_rsa"])
 
 os.environ['DEISCTL_TUNNEL'] = pub_ip
-call(["deisctl", "config", "platform", "set", "sshPrivateKey=/home/dim/.ssh/id_rsa"])
+call(["deisctl", "config", "platform", "set", "sshPrivateKey=~/.ssh/id_rsa"])
 call(["deisctl", "config", "platform", "set", "domain=deis." + pub_ip + ".xip.io"])
 call(["deisctl", "install", "platform"])
 call(["deisctl", "list"])
