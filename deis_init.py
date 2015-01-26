@@ -45,7 +45,9 @@ while x <= CLUSTER_SIZE:
 	# Clean ssh key fingerprint
 	call(["ssh-keygen", "-R", pub_ip])
 	# Configure droplet for DEIS cluster
-	call(["/usr/bin/ssh", "-o StrictHostKeyChecking=no", "-o PasswordAuthentication=no", "core@" + pub_ip, "sudo /usr/bin/coreos-cloudinit --from-url=https://raw.githubusercontent.com/freeminder/deis_cluster_automation/master/cloud-config"])
+	# call(["/usr/bin/ssh", "-o StrictHostKeyChecking=no", "-o PasswordAuthentication=no", "core@" + pub_ip, "sudo /usr/bin/coreos-cloudinit --from-url=https://raw.githubusercontent.com/freeminder/deis_cluster_automation/master/cloud-config"])
+	call(["/usr/bin/scp", "-o StrictHostKeyChecking=no", "-o PasswordAuthentication=no", "cloud-config", "core@" + pub_ip + ":~/"])
+	call(["/usr/bin/ssh", "-o StrictHostKeyChecking=no", "-o PasswordAuthentication=no", "core@" + pub_ip, "sudo /usr/bin/coreos-cloudinit --from-file=cloud-config"])
 	x += 1
 
 
