@@ -9,9 +9,9 @@ import shutil
 import os
 import sys
 import time
+from myconfig import *
 
 CLUSTER_SIZE = 3
-API_KEY = 'ad64ddd15bf37aa7157b30b3eada5d0d254936ae11d30e6c8ae386c9d2803d1c'
 # dosa.set_debug()  # enables debug logs
 client = dosa.Client(api_key=API_KEY)
 HOME = os.environ['HOME']
