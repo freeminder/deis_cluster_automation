@@ -11,7 +11,6 @@ import sys
 import time
 from myconfig import *
 
-CLUSTER_SIZE = 3
 # dosa.set_debug()  # enables debug logs
 client = dosa.Client(api_key=API_KEY)
 HOME = os.environ['HOME']
@@ -31,7 +30,7 @@ while x <= CLUSTER_SIZE:
 	vm_gen_num = random.randint(11,99)
 	vm_gen_let = random.choice(string.ascii_lowercase)
 	status, result = client.droplets.create(name='Dmitry.CoreOS.test' + str(vm_gen_num) + str(vm_gen_let), region='nyc3',\
-		size='4gb', image='coreos-stable', private_networking='true', ssh_keys=['534374'])
+		size='4gb', image='coreos-stable', private_networking='true', ssh_keys=[SSH_KEY_ID])
 	new_droplet_id = result['droplet']['id']
 	new_droplet = client.Droplet(new_droplet_id)
 	# Wait for IP address allocation
@@ -64,5 +63,5 @@ call(["deis", "keys:add"])
 
 os.chdir("../drupal_allin2/")
 call(["deis", "create"])
-call(["deis", "tags:set", "environ=prod,master=true"])
+call(["deis", "tags:set", "master=true"])
 call(["git", "push", "deis", "master"])
